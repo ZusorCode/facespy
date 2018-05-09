@@ -62,7 +62,8 @@ face = FaceTools()
 face.load_faces()
 
 while True:
-
+    if face.check_faces():
+        print("Hi")
     cv2.imshow("Live Facial rec", img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         exit()
