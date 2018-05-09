@@ -11,6 +11,7 @@ class FaceTools:
     def __init__(self):
         self.face_encodings = []
         self.face_names = []
+        self.current_face_names = []
         self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
         self.cap = cv2.VideoCapture(0)
         self.fullscreen = False
@@ -42,13 +43,13 @@ class FaceTools:
         face_locations = face_recognition.face_locations(rgb_small_frame)
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
         for face_encoding in face_encodings:
-            matches = face_recognition.compare_faces(rgb_small_frame, face_locations)
+            matches = face_recognition.compare_faces(self.face_encodings, face_encoding)
             name = "Unknown"
             if True in matches:
                 first_match_index = matches.index(True)
-                name = self.face_names[first_match_index]
-
-    def check_for_faces(self):
+                name = known_face_names[first_match_index]
+            self.current_face_names.append(name)
+    def check_faces(self):
         ret, img = face.cap.read()
         faces = face.face_cascade.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4)
         if len(faces) != 0:
