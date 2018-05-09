@@ -28,7 +28,7 @@ class FaceTools:
                 self.face_names += folder
 
     @staticmethod
-    def save_face(image):
+    def save_face(self, image):
         filename = str(time.time()).replace(".", "") + ".png"
         face_id = random.randint(1000, 9999)
         cv2.imwrite(filename=filename, img=image)
@@ -36,8 +36,7 @@ class FaceTools:
             os.makedirs(f"Faces/{face_id}")
         os.rename(filename, f"Faces/{face_id}/{filename}")
 
-
-    def find_face_ids(image):
+    def find_face_ids(self, image):
         small_frame = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
         rgb_small_frame = small_frame[:, :, ::-1]
         face_locations = face_recognition.face_locations(rgb_small_frame)
@@ -47,11 +46,12 @@ class FaceTools:
             name = "Unknown"
             if True in matches:
                 first_match_index = matches.index(True)
-                name = known_face_names[first_match_index]
-            self.current_face_names.append(name)
+                name = self.face_names[first_match_index]
+            self.current_face_names += name
+
     def check_faces(self):
-        ret, img = face.cap.read()
-        faces = face.face_cascade.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4)
+        ret, self.img = face.cap.read()
+        faces = face.face_cascade.detectMultiScale(self.img, scaleFactor=1.3, minNeighbors=4)
         if len(faces) != 0:
             return True
         else:
@@ -63,7 +63,8 @@ face.load_faces()
 
 while True:
     if face.check_faces():
-        print("Hi")
-    cv2.imshow("Live Facial rec", img)
+        face.find_face_ids(face.img)
+        print(face.current_face_names)
+    cv2.imshow("Live Facial rec", face.img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         exit()
